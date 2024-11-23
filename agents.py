@@ -485,6 +485,12 @@ class agua(Agent):
         self.y=coord[1]
 
 class River(Agent):
-    def __init__(self, coord): 
-        self.matriz=matriz
-        self.aguas=[agua(i) for i in coord]
+    def __init__(self, coord, matriz): 
+        self.matriz = matriz
+        self.aguas = []
+        
+        # Adiciona somente as coordenadas válidas
+        for i in coord:
+            x, y = i
+            if 0 <= x < len(matriz) and 0 <= y < len(matriz[0]):  # Verifica se a coordenada está dentro dos limites da matriz
+                self.aguas.append(agua(i))

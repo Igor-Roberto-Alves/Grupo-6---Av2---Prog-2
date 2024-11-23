@@ -1,35 +1,50 @@
 # Desenvolvido por Jader e Joênio
 
+import random
+import agents as agent
+
+
 def river_maker(matriz):
-    borda = []
+    # Define usando as linhas da matriz
+    num_rows = len(matriz)
+    num_cols = len(matriz[0])
+
+    # Onde inicia o rio
+    x_start = random.randint(0, num_rows - 1)
+    y_start = random.randint(0, num_cols - 1)
+
+    # Teremos uma lista para armazenar as coordenadas do Rio
     rio = []
+    visited = set() 
 
-    valores_de_x = range(len(matriz[0]))
-    valores_de_y = range(len(matriz))
+    x, y = x_start, y_start
+    rio.append((x, y))
+    visited.add((x, y))
 
-    A = (random.choice(valores_de_x), random.choice(valores_de_y))
-    B = (random.choice(valores_de_x), random.choice(valores_de_y))
+    # Movimentos possíveis: para cima, para baixo, para a esquerda ou para a direita
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # direita, baixo, esquerda, cima
 
-    dist = (A[0] - B[0], A[1] - B[1])
+    while len(rio) < num_rows * num_cols:  # Vamos tentar expandir o rio até cobrir a floresta
+        # Pega o último ponto do rio
+        current_x, current_y = rio[-1]
 
-    Caminho = []
-    aqui = A
+        # Embaralha os movimentos para aleatoriedade
+        random.shuffle(directions)
 
-    if dist[0] > 0:
-        Caminho.extend([(1, 0)] * dist[0])
-    else:
-        Caminho.extend([(-1, 0)] * (-dist[0]))
+        moved = False
+        for dx, dy in directions:
+            # Calcula a nova posição
+            new_x, new_y = current_x + dx, current_y + dy
 
-    if dist[1] > 0:
-        Caminho.extend([(0, 1)] * dist[1])
-    else:
-        Caminho.extend([(0, -1)] * (-dist[1]))
+            # Verifica se está dentro dos limites e se a célula não foi visitada
+            if (0 <= new_x < num_rows and 0 <= new_y < num_cols) and (new_x, new_y) not in visited:
+                rio.append((new_x, new_y))
+                visited.add((new_x, new_y))
+                moved = True
+                break  # Se mover para uma nova célula, sai do loop
 
-    for direcao in Caminho:
-        aqui = (aqui[0] + direcao[0], aqui[1] + direcao[1])
-        if 0 <= aqui[0] < len(matriz) and 0 <= aqui[1] < len(matriz[0]):
-            borda.append(aqui)
-            matriz[aqui[0]][aqui[1]] = agent.Barrier()  # Definir como um "barreira" (água)
+        # Se não conseguimos mover, o rio está "trancado", interrompemos
+        if not moved:
+            break
 
-    # Devolver a lista de células que compõem o rio
-    return borda
+    return rio

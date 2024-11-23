@@ -52,12 +52,16 @@ def draw_forest(screen, forest):
                 )
 
 
-def draw_rio(screen, river, map_width, map_height):
-    for sublist in river:  # Percorre cada lista dentro de 'river'
-        for (x, y) in sublist:  # Percorre cada tupla (x, y) dentro de cada lista
-            # Verifica se as coordenadas estão dentro dos limites do mapa
-            if 0 <= x < map_height and 0 <= y < map_width:
-                screen.blit(im.WATER_IMG, (y * im.cell_size, x * im.cell_size))
+def draw_rio(screen, borda, cell_size, map_width, map_height):
+    for (x, y) in borda:
+        # Verifica se as coordenadas estão dentro dos limites da tela
+        if 0 <= x < map_height and 0 <= y < map_width:
+            pygame.draw.rect(
+                screen,
+                (0, 0, 255),  # Azul para representar água
+                (y * cell_size, x * cell_size, cell_size, cell_size),
+            )
+
 
 
 def draw_bombeiros(screen, lista_bombeiros):
@@ -286,7 +290,8 @@ def main():
 
         if slider_rio.getValue() != num_rios:
             num_rios = slider_rio.getValue()
-            #rios = [agent.rios(matriz) for _ in range(num_fireman)]
+            rios = [river_maker(matriz) for _ in range(num_rios)]
+
         if slider_chicken.getValue() != number_chickens:
             number_chickens = slider_chicken.getValue()
             animals = [agent.Animal(matriz) for _ in range(number_chickens)]
@@ -304,10 +309,12 @@ def main():
         draw_bombeiros(screen, bombeiros_vivos)
         animals = draw_animals(screen, animals)
         draw_birds(screen, birds)
+        
 
-        # Chamando a função com os parâmetros necessários
+        # Agora, chamando a função com os parâmetros necessários
         for rio in rios:
-            draw_rio(screen, rio, len(matriz[0]), len(matriz))
+            draw_rio(screen, rio, im.cell_size, len(matriz[0]), len(matriz))
+
 
         # Desenhar o botão apenas se ele estiver visível
         if im.start_but.visible:

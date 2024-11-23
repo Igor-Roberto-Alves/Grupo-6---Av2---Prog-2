@@ -2,6 +2,7 @@ import pygame
 import time
 import agents as agent
 from forest import Forest
+from Rio import river_maker
 import images_but as im
 import random
 
@@ -49,6 +50,14 @@ def draw_forest(screen, forest):
                     (105, 107, 47),
                     (j * im.cell_size, i * im.cell_size, im.cell_size, im.cell_size),
                 )
+
+
+def draw_rio(screen, river, map_width, map_height):
+    for sublist in river:  # Percorre cada lista dentro de 'river'
+        for (x, y) in sublist:  # Percorre cada tupla (x, y) dentro de cada lista
+            # Verifica se as coordenadas estão dentro dos limites do mapa
+            if 0 <= x < map_height and 0 <= y < map_width:
+                screen.blit(im.WATER_IMG, (y * im.cell_size, x * im.cell_size))
 
 
 def draw_bombeiros(screen, lista_bombeiros):
@@ -124,7 +133,6 @@ def init_screen():
     for i in range((im.tela_x // im.cell_size) // 4):
         for j in range(im.tela_y // im.cell_size):
             matriz[j][i] = "black"
-
     return matriz, screen
 
 
@@ -137,7 +145,9 @@ def main():
     start = False  # Controle para verificar se o incêndio deve iniciar
     start2 = False
     loading = False
+    num_rios = 1
     num_fireman = 20
+    rios = [river_maker(matriz)]
     bombeiros = [agent.bombeiro(matriz) for _ in range(num_fireman)]
     birds = [agent.Bird(matriz) for _ in range(10)]
     forest.surge_trees = False
@@ -162,6 +172,9 @@ def main():
     label2.disable()
     label3 = TextBox(screen, 15, 170, 270, 30, fontSize=20)
     label3.setText(f"Número de bombeiros: {num_fireman}")
+    label4 = TextBox(screen, 15, 250, 270, 30, fontSize=20)
+    label4.setText(f"Número de rios: {num_rios}")
+
 
     slider_chicken = Slider(
         screen, 20, 130, 250, 12, min=1, max=200, step=1, initial=number_chickens
@@ -170,6 +183,9 @@ def main():
     adding_fireman = False
     slider_fireman = Slider(
         screen, 20, 210, 250, 12, min=1, max=200, step=1, initial=num_fireman
+    )
+    slider_rio = Slider(
+        screen, 20, 290, 250, 12, min=1, max=5, step=1, initial=num_rios
     )
 
     while running:
@@ -268,6 +284,9 @@ def main():
             steps_by_second = slider.getValue()
             pygame.time.set_timer(TIMERSTEPEVENT, 1000 // steps_by_second)
 
+        if slider_rio.getValue() != num_rios:
+            num_rios = slider_rio.getValue()
+            #rios = [agent.rios(matriz) for _ in range(num_fireman)]
         if slider_chicken.getValue() != number_chickens:
             number_chickens = slider_chicken.getValue()
             animals = [agent.Animal(matriz) for _ in range(number_chickens)]
@@ -285,6 +304,10 @@ def main():
         draw_bombeiros(screen, bombeiros_vivos)
         animals = draw_animals(screen, animals)
         draw_birds(screen, birds)
+
+        # Chamando a função com os parâmetros necessários
+        for rio in rios:
+            draw_rio(screen, rio, len(matriz[0]), len(matriz))
 
         # Desenhar o botão apenas se ele estiver visível
         if im.start_but.visible:

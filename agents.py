@@ -1,11 +1,11 @@
 import random
 
 
-class Agent:
-    # Todo agente carregará neighbors e update_condition
-    def neighbors(self, matriz):
+class Agente:
+    # Todo agente carregará vizinhos e condiçao_de_atualizaçao
+    def vizinhos(self, matriz):
         lista = []
-        directions = [
+        direçoes = [
             (0, 1),
             (1, 0),
             (-1, 0),
@@ -15,27 +15,27 @@ class Agent:
             (-1, 1),
             (-1, -1),
         ]
-        for dx, dy in directions:
+        for dx, dy in direçoes:
             nx, ny = self.x + dx, self.y + dy
             if 0 <= nx < len(matriz) and 0 <= ny < len(matriz[0]):
-                if isinstance(matriz[nx][ny], Tree) or isinstance(matriz[nx][ny], Bush):
+                if isinstance(matriz[nx][ny], Arvore) or isinstance(matriz[nx][ny], Arbusto):
                     lista.append(matriz[nx][ny])
 
         return lista
 
-    def update_condition(self):
+    def condiçao_de_atualizaçao(self):
         raise NotImplementedError
 
-    # O ideal ao criar um agente deve ser conter tudo que ele faz em update_condition
+    # O ideal ao criar um agente deve ser conter tudo que ele faz em condiçao_de_atualizaçao
     # Assim facilitaria atualizar o agente a cada iteração
 
 
-class Animal(Agent):
-    def __init__(self, matriz, x=None, y=None, egg=False):
+class Animal(Agente):
+    def __init__(self, matriz, x=None, y=None, ovo=False):
         self.matriz = matriz  # Matriz da floresta
-        self.life = 1
-        self.status = "alive"
-        self.egg = egg  # A galinha está em forma de ovo ou já nasceu
+        self.vida = 1
+        self.status = "vivo"
+        self.ovo = ovo  # A galinha está em forma de ovo ou já nasceu
         # Atributos auxiliares
         self.step = 0
         self.passo = 0
@@ -46,7 +46,7 @@ class Animal(Agent):
             self.x, self.y = random.randint(0, len(matriz) - 1), random.randint(
                 0, len(matriz[0]) - 1
             )
-            if isinstance(matriz[self.x][self.y], Tree):
+            if isinstance(matriz[self.x][self.y], Arvore):
                 break
 
         # Se for passado x,y no caso do ovo
@@ -54,16 +54,16 @@ class Animal(Agent):
             self.x = x
             self.y = y
 
-    def bush_proximo(self):
-        queue = [(self.x, self.y, 0)]  # Posição atual e distância inicial
-        visited = set()
-        visited.add((self.x, self.y))
+    def arbusto_proximo(self):
+        fila = [(self.x, self.y, 0)]  # Posição atual e distância inicial
+        visitados = set()
+        visitados.add((self.x, self.y))
 
-        while queue:
-            cx, cy, dist = queue.pop(0)
+        while fila:
+            cx, cy, dist = fila.pop(0)
 
             # Verifica se a célula atual é um arbusto
-            if isinstance(self.matriz[cx][cy], Bush):
+            if isinstance(self.matriz[cx][cy], Arbusto):
                 return cx, cy
 
             # Adiciona vizinhos à fila
@@ -72,16 +72,16 @@ class Animal(Agent):
                 if (
                     0 <= nx < len(self.matriz)
                     and 0 <= ny < len(self.matriz[0])
-                    and (nx, ny) not in visited
-                    and isinstance(self.matriz[nx][ny], (Tree, Bush))
+                    and (nx, ny) not in visitados
+                    and isinstance(self.matriz[nx][ny], (Arvore, Arbusto))
                 ):
-                    queue.append((nx, ny, dist + 1))
-                    visited.add((nx, ny))
+                    fila.append((nx, ny, dist + 1))
+                    visitados.add((nx, ny))
 
         return None
 
-    def mover_para_bush(self):
-        destino = self.bush_proximo()
+    def mover_para_arbusto(self):
+        destino = self.arbusto_proximo()
         if destino:
             dx = destino[0] - self.x
             dy = destino[1] - self.y
@@ -99,61 +99,61 @@ class Animal(Agent):
             if (
                 0 <= novo_x < len(self.matriz)
                 and 0 <= novo_y < len(self.matriz[0])
-                and isinstance(self.matriz[novo_x][novo_y], (Tree, Bush))
+                and isinstance(self.matriz[novo_x][novo_y], (Arvore, Arbusto))
             ):
                 self.x = novo_x
                 self.y = novo_y
         else:
             self.andar()
 
-    def update_life(self):
+    def atualizar_vida(self):
         # Se a galinha nao está em um arbusto ela está passando fome
-        hungry = True
-        lista_vizinhos = self.neighbors(self.matriz)
+        faminto = True
+        lista_vizinhos = self.vizinhos(self.matriz)
         lista_vizinhos.append(self.matriz[self.x][self.y])
-        for neigh in lista_vizinhos:
-            if isinstance(neigh, Bush):
-                hungry = False  # Não está com fome se estiver em um arbusto
-            if isinstance(neigh, Tree) or isinstance(
-                neigh, Bush
+        for vizinho in lista_vizinhos:
+            if isinstance(vizinho, Arbusto):
+                faminto = False  # Não está com fome se estiver em um arbusto
+            if isinstance(vizinho, Arvore) or isinstance(
+                vizinho, Arbusto
             ):  # Se algum vizinho contando seu próprio lugar, estiver pegando fogo
-                if neigh.condition == "burning":
-                    self.life -= 0.1
-                    if self.egg:  # Se for um ovo morre instantaneamente
-                        self.life -= 1
-        if hungry:  # A cada passo com fome perde 0.1 de vida
-            self.life -= 0.1
+                if vizinho.condiçao == "queimando":
+                    self.vida -= 0.1
+                    if self.ovo:  # Se for um ovo morre instantaneamente
+                        self.vida -= 1
+        if faminto:  # A cada passo com fome perde 0.1 de vida
+            self.vida -= 0.1
 
-        if self.life <= 0:
-            self.status = "dead"
-            if self.egg:
+        if self.vida <= 0:
+            self.status = "morto"
+            if self.ovo:
                 self.status = "final"
 
-    def update_condition(self):
-        if not self.egg and self.status != "dead" and self.status != "final":
+    def condiçao_de_atualizaçao(self):
+        if not self.ovo and self.status != "morto" and self.status != "final":
             self.passo += 1
             if self.passo == 4:
-                self.mover_para_bush()
-                self.update_life()
+                self.mover_para_arbusto()
+                self.atualizar_vida()
                 self.passo = 0
             return self.procriar()
-        if self.status == "dead":
+        if self.status == "morto":
             self.morrendo += 1
             if self.morrendo == 100:
 
                 self.status = "final"
 
-        elif self.egg:
+        elif self.ovo:
             self.step += 1
-            self.update_life()
+            self.atualizar_vida()
             if self.step == 20:
-                self.egg = False
-                self.life = 1
+                self.ovo = False
+                self.vida = 1
         return None
 
     def andar(self):
 
-        direction = [
+        direçoes = [
             (0, 1),
             (0, -1),
             (1, 0),
@@ -163,41 +163,41 @@ class Animal(Agent):
             (1, -1),
             (-1, -1),
         ]
-        random.shuffle(direction)
-        directions_possi = []
-        for dx, dy in direction:
+        random.shuffle(direçoes)
+        direçoes_possiveis = []
+        for dx, dy in direçoes:
             nx, ny = self.x + dx, self.y + dy
             if (
                 0 <= nx < len(self.matriz)
                 and 0 <= ny < len(self.matriz[0])
                 and (
-                    isinstance(self.matriz[nx][ny], Tree) or self.matriz[nx][ny] == "v"
+                    isinstance(self.matriz[nx][ny], Arvore) or self.matriz[nx][ny] == "grama"
                 )
             ):
                 self.x, self.y = nx, ny  # Move o bombeiro para a nova posição
-                directions_possi.append((nx, ny))
+                direçoes_possiveis.append((nx, ny))
 
-        if directions_possi:
-            a = random.choice(directions_possi)
+        if direçoes_possiveis:
+            a = random.choice(direçoes_possiveis)
             self.x, self.y = a[0], a[1]
 
     def procriar(self):
-        if self.status == "alive":
+        if self.status == "vivo":
             a = random.randint(1, 200)  # Põem um ovo com esta probabilidade
             if a == 1:
                 return Animal(self.matriz, self.x, self.y, True)
 
 
 """""
-class Bird:
+class Passaro:
     def __init__(self, matriz, x=None, y=None):
         self.matriz = matriz
-        self.condition = "alive"
+        self.condiçao = "vivo"
         while True:
             self.x, self.y = random.randint(0, len(matriz) - 1), random.randint(
                 0, len(matriz[0]) - 1
             )
-            if isinstance(matriz[self.x][self.y], Tree):
+            if isinstance(matriz[self.x][self.y], Arvore):
                 break
 
         if x and y:
@@ -206,209 +206,205 @@ class Bird:
         self.spread_prob = 1  # Chance de semear uma árvore.
         self.step = 0
 
-    def update_condition(self):
+    def condiçao_de_atualizaçao(self):
         self.step += 1
         if self.step == 3:
             dx, dy = random.randint(-2, 2), random.randint(-2, 2)
             nx, ny = self.x + dx, self.y + dy
             if 0 <= nx < len(self.matriz) and 0 <= ny < len(self.matriz[0]):
                 self.x, self.y = nx, ny
-                if self.matriz[nx][ny] == "v" and random.random() < self.spread_prob:
+                if self.matriz[nx][ny] == "grama" and random.random() < self.spread_prob:
                     b = random.randint(1, 3)
                     if b == 1:
-                        self.matriz[nx][ny] = Tree([nx, ny])
+                        self.matriz[nx][ny] = Arvore([nx, ny])
                     else:
-                        self.matriz[nx][ny] = Bush([nx, ny])
-                elif self.matriz[nx][ny] == "black":
-                    self.condition = "remove"
+                        self.matriz[nx][ny] = Arbusto([nx, ny])
+                elif self.matriz[nx][ny] == "preto":
+                    self.condiçao = "remove"
             else:
-                self.condition = "remove"
+                self.condiçao = "remove"
             self.step = 0
 
-    def at_listbirds(self, list_birds):
-        for bird in list_birds:
-            if bird.condition == "remove":
-                list_birds.remove(bird)
+    def atualizar_populacao_de_passaros(self, lista_de_passaros):
+        for passaro in lista_de_passaros:
+            if passaro.condiçao == "remove":
+                lista_de_passaros.remove(passaro)
 
         a = random.randint(0, 10)
         if a == 1:
-            list_birds.append(Bird(self.matriz))
+            lista_de_passaros.append(Bird(self.matriz))
 """ ""
 
 
-class Bird:
-    def __init__(self, matrix, x=None, y=None):
+class Passaro:
+    def __init__(self, matriz, x=None, y=None):
         if x and y:
             self.x, self.y = x, y
         else:
             while True:
-                self.x = random.randint(0, len(matrix) - 1)
-                self.y = random.randint(0, len(matrix[0]) - 1)
-                cell = matrix[self.x][self.y]
-                if isinstance(cell, Tree):
+                self.x = random.randint(0, len(matriz) - 1)
+                self.y = random.randint(0, len(matriz[0]) - 1)
+                celula = matriz[self.x][self.y]
+                if isinstance(celula, Arvore):
                     break
 
-        self.status = "alive"
-        self.age = 0
-        self.lifespan = random.randint(20, 50)
-        self.matrix = matrix
+        self.status = "vivo"
+        self.idade = 0
+        self.espectativa_vida = random.randint(20, 50)
+        self.matriz = matriz
 
-    def move(self):
-        if self.status != "alive":
+    def movimento(self):
+        if self.status != "vivo":
             return
 
-        direction = random.choice(["up", "down", "left", "right"])
-        if direction == "up":
+        direçao = random.choice(["cima", "baixo", "esquerda", "direita"])
+        if direçao == "cima":
             self.x -= 1
-        elif direction == "down":
+        elif direçao == "baixo":
             self.x += 1
-        elif direction == "left":
+        elif direçao == "esquerda":
             self.y -= 1
-        elif direction == "right":
+        elif direçao == "direita":
             self.y += 1
 
-        if self.x < 0 or self.x >= len(self.matrix):
-            self.status = "dead"
-        elif self.y < 0 or self.y >= len(self.matrix[0]):
-            self.status = "dead"
-        elif self.matrix[self.x][self.y] == "black":
-            self.status = "dead"
+        if self.x < 0 or self.x >= len(self.matriz):
+            self.status = "morto"
+        elif self.y < 0 or self.y >= len(self.matriz[0]):
+            self.status = "morto"
+        elif self.matriz[self.x][self.y] == "preto":
+            self.status = "morto"
 
-    def plant_tree(self, seed_prob=0.1, bush_prob=0.1):
-        if self.status != "alive":
+    def plantar_arvore(self, prob_semente=0.1, prob_arbusto=0.1):
+        if self.status != "vivo":
             return
 
-        if self.matrix[self.x][self.y] == "v" and random.random() < seed_prob:
-            self.matrix[self.x][self.y] = Tree([self.x, self.y])
-        elif self.matrix[self.x][self.y] == "v" and random.random() < bush_prob:
-            self.matrix[self.x][self.y] = Bush([self.x, self.y])
+        if self.matriz[self.x][self.y] == "grama" and random.random() < prob_semente:
+            self.matriz[self.x][self.y] = Arvore([self.x, self.y])
+        elif self.matriz[self.x][self.y] == "grama" and random.random() < prob_arbusto:
+            self.matriz[self.x][self.y] = Arbusto([self.x, self.y])
 
-    def check_fire(self, fire_radius=1):
-        if self.status != "alive":
+    def checar_fogo(self, raio_fogo=1):
+        if self.status != "vivo":
             return False
 
-        for dx in range(-fire_radius, fire_radius + 1):
-            for dy in range(-fire_radius, fire_radius + 1):
+        for dx in range(-raio_fogo, raio_fogo + 1):
+            for dy in range(-raio_fogo, raio_fogo + 1):
                 nx, ny = self.x + dx, self.y + dy
-                if 0 <= nx < len(self.matrix) and 0 <= ny < len(self.matrix[0]):
-                    cell = self.matrix[nx][ny]
-                    if isinstance(cell, Tree) and cell.condition == "burning":
-                        self.status = "burning"
+                if 0 <= nx < len(self.matriz) and 0 <= ny < len(self.matriz[0]):
+                    celula = self.matriz[nx][ny]
+                    if isinstance(celula, Arvore) and celula.condiçao == "queimando":
+                        self.status = "queimando"
                         return True
         return False
 
-    def reproduce(self, birds, mating_prob=0.1, max_birds=300):
-        if len(birds) >= max_birds:
+    def reproduzir(self, passaros, prob_acasalar=0.1, max_passaros=300):
+        if len(passaros) >= max_passaros:
             return
         if (
-            self.age >= 10
+            self.idade >= 10
         ):  # O pássaro pode começar a se reproduzir após atingir certa idade
             # Verificar se há outros pássaros nas proximidades
-            nearby_birds = [
-                bird
-                for bird in birds
-                if abs(bird.x - self.x) <= 3
-                and abs(bird.y - self.y) <= 3
-                and bird != self
+            passaros_perto = [
+                passaro
+                for passaro in passaros
+                if abs(passaro.x - self.x) <= 3
+                and abs(passaro.y - self.y) <= 3
+                and passaro != self
             ]
             if (
-                nearby_birds and random.random() < mating_prob
+                passaros_perto and random.random() < prob_acasalar
             ):  # 10% de chance de reprodução
                 # Gerar um novo pássaro em uma posição próxima
-                new_bird = Bird(
-                    self.matrix,
+                novo_passaro = Passaro(
+                    self.matriz,
                     x=self.x + random.choice([-1, 0, 1]),
                     y=self.y + random.choice([-1, 0, 1]),
                 )
-                birds.append(new_bird)
+                passaros.append(novo_passaro)
 
-    def update_condition(self, birds):
-        if self.status == "dead":
+    def condiçao_de_atualizaçao(self, passaros):
+        if self.status == "morto":
             return
 
-        self.move()
-        self.plant_tree()
-        self.reproduce(birds)
-        self.age += 1
+        self.movimento()
+        self.plantar_arvore()
+        self.reproduzir(passaros)
+        self.idade += 1
 
-        if self.age >= self.lifespan:
-            self.status = "dead"
+        if self.idade >= self.espectativa_vida:
+            self.status = "morto"
 
-    def at_listbirds(self, list_birds):
-        list_birds[:] = [bird for bird in list_birds if bird.status != "dead"]
+    def atualizar_populacao_de_passaros(self, lista_de_passaros):
+        lista_de_passaros[:] = [passaro for passaro in lista_de_passaros if passaro.status != "morto"]
 
 
-class Tree(Agent):
+class Arvore(Agente):
     def __init__(self, coord):
-        self.condition = "alive"
-        self.umidade = random.randint(80, 85)  # Resistência ao fogo baseada na umidade
-        self.next_condition = None
+        self.condiçao = "vivo"
+        self.umidade = random.randint(75, 80)  # Resistência ao fogo baseada na umidade
+        self.proxima_condiçao = None
         self.x = coord[0]
         self.y = coord[1]
         self.count = 0  # Contador para etapas de queima
         self.step = 0  # Etapas que a árvore passa antes de ser "final"
 
-    def attempt_to_burn(self, matriz, vent):
+    def propagar_fogo(self, matriz, vent):
         """
         Tenta propagar o fogo para os vizinhos com base na condição atual,
         umidade e influência do vento.
         """
-        for neighbor in self.neighbors(matriz):
-            if neighbor.condition == "alive" and neighbor.next_condition != "burning":
+        for vizinho in self.vizinhos(matriz):
+            if vizinho.condiçao == "vivo" and vizinho.proxima_condiçao != "queimando":
                 # Calcula a probabilidade base de queima
-                base_probability = 100 - neighbor.umidade
+                probabilidade_base = 100 - vizinho.umidade
 
                 # Reduz a probabilidade se o fogo estiver se dissipando
-                if self.condition == "burned":
-                    base_probability -= 10  # Fogo menos intenso
+                if self.condiçao == "queimado":
+                    probabilidade_base -= 10  # Fogo menos intenso
 
                 # Ajusta com base no vento
-                if vent.directions:
-                    if neighbor in vent.neighbors_vento(self, matriz):
-                        base_probability = min(
-                            90, base_probability + 30
+                if vent.direçoes:
+                    if vizinho in vent.vizinhos_vento(self, matriz):
+                        probabilidade_base = min(
+                            90, probabilidade_base + 15
                         )  # Aumenta devido ao vento
-                        base_probability = 100
                     else:
-                        base_probability = max(
-                            10, base_probability - 20
-                        )  # Reduz se fora da direção do vento
-                        base_probability = 0
-
+                        probabilidade_base = random.randint(3, 7)
+                        # Reduz se fora da direção do vento
                 # Probabilidade ajustada com um fator de suavização
-                probability = max(
-                    0, min(100, base_probability)
+                probabilidade = max(
+                    0, min(100, probabilidade_base)
                 )  # Garante limite entre 0 e 100
 
                 # Tenta queimar o vizinho
-                if random.random() < probability / 100:
-                    neighbor.next_condition = "burning"
+                if random.random() < probabilidade / 100:
+                    vizinho.proxima_condiçao = "queimando"
 
-    def update_condition(self, forest):
+    def condiçao_de_atualizaçao(self, floresta):
         """
         Atualiza a condição da árvore com base no estado atual e propaga o fogo para os vizinhos.
         """
-        matriz = forest.matriz
-        vent = forest.vent
+        matriz = floresta.matriz
+        vent = floresta.vent
 
-        if self.next_condition == "burned":
-            self.condition = "burned"
+        if self.proxima_condiçao == "queimado":
+            self.condiçao = "queimado"
             self.step += 1  # Passa um passo como "queimada"
             if self.step == 3:  # Após 3 etapas, marca como finalizada
-                self.next_condition = "final"
+                self.proxima_condiçao = "final"
             else:
-                self.attempt_to_burn(matriz, vent)
+                self.propagar_fogo(matriz, vent)
 
-        elif self.next_condition == "final":
-            matriz[self.x][self.y] = "v"  # Some
+        elif self.proxima_condiçao == "final":
+            matriz[self.x][self.y] = "grama"  # Some
 
-        elif self.next_condition == "burning":
+        elif self.proxima_condiçao == "queimando":
             self.count += 1  # Incrementa o contador enquanto está queimando
-            self.condition = self.next_condition
+            self.condiçao = self.proxima_condiçao
             if self.count == 2:
-                self.attempt_to_burn(matriz, vent)  # Propaga o fogo para os vizinhos
-            if self.count > 2:  # Queima por 2 etapas antes de ser marcada como "burned"
-                self.next_condition = "burned"
+                self.propagar_fogo(matriz, vent)  # Propaga o fogo para os vizinhos
+            if self.count > 2:  # Queima por 2 etapas antes de ser marcada como "queimado"
+                self.proxima_condiçao = "queimado"
 
     def __repr__(self):
         """
@@ -417,61 +413,61 @@ class Tree(Agent):
         - 'b' para queimando
         - '0' para queimada
         """
-        if self.condition == "alive":
+        if self.condiçao == "vivo":
             return "1"
-        if self.condition == "burning":
+        if self.condiçao == "queimando":
             return "b"
-        if self.condition == "burned":
+        if self.condiçao == "queimado":
             return "0"
 
 
-class Bush(Tree):
+class Arbusto(Arvore):
     def __init__(self, coord):
 
         super().__init__(coord)
-        self.umidade = random.randint(50, 60)  # Bushes têm umidade menor que árvores
+        self.umidade = random.randint(50, 60)  # Arbustos têm umidade menor que árvores
 
 
-class bombeiro(Agent):
+class bombeiro(Agente):
     def __init__(self, matriz, x=None, y=None):
         self.step = 0  # Definindo o numero de atualizações para o bombeiro andar
         self.matriz = matriz  # Matriz da floresta
-        self.life = 1  # O bombeiro terá vida igual a 1 e perderá conforme as árvores ao seu redor pegam fogo
-        self.status = "alive"
+        self.vida = 1  # O bombeiro terá vida igual a 1 e perderá conforme as árvores ao seu redor pegam fogo
+        self.status = "vivo"
 
         # Posição aleatória em que o bombeiro nascerá
         while True:
             self.x, self.y = random.randint(0, len(matriz) - 1), random.randint(
                 0, len(matriz[0]) - 1
             )
-            if isinstance(matriz[self.x][self.y], Tree):
+            if isinstance(matriz[self.x][self.y], Arvore):
                 break
         if x and y:
             self.x, self.y = x, y
 
-    def update_condition(self):
+    def condiçao_de_atualizaçao(self):
         self.andar()  # O bomebiro anda
         # Verificando árvores que estão queimando
         self.apaga_fogo()
-        for neigh in self.neighbors(self.matriz):
-            if isinstance(neigh, Tree):
-                if neigh.condition == "burning":
-                    self.life -= 0.01
+        for vizinho in self.vizinhos(self.matriz):
+            if isinstance(vizinho, Arvore):
+                if vizinho.condiçao == "queimando":
+                    self.vida -= 0.01
 
-        if 0.5 <= self.life <= 0.8:
-            self.status = "burning"
+        if 0.5 <= self.vida <= 0.8:
+            self.status = "queimando"
 
-        elif 0 < self.life < 0.5:
-            self.status = "burning2"
+        elif 0 < self.vida < 0.5:
+            self.status = "queimando"
 
-        elif self.life <= 0:
-            self.status = "dead"
+        elif self.vida <= 0:
+            self.status = "morto"
 
     def andar(self):
         # A função andar, por enquanto apenas leva o bombeiro para um vizinho aleatório
         self.step += 1
         if self.step == 5:
-            direction = [
+            direçoes = [
                 (0, 1),
                 (0, -1),
                 (1, 0),
@@ -481,74 +477,74 @@ class bombeiro(Agent):
                 (1, -1),
                 (-1, -1),
             ]
-            random.shuffle(direction)
-            directions_possi = []
-            for dx, dy in direction:
+            random.shuffle(direçoes)
+            direçoes_possiveis = []
+            for dx, dy in direçoes:
                 nx, ny = self.x + dx, self.y + dy
                 if (
                     0 <= nx < len(self.matriz)
                     and 0 <= ny < len(self.matriz[0])
                     and (
-                        isinstance(self.matriz[nx][ny], Tree)
-                        or self.matriz[nx][ny] == "v"
+                        isinstance(self.matriz[nx][ny], Arvore)
+                        or self.matriz[nx][ny] == "grama"
                     )
                 ):
                     self.x, self.y = nx, ny  # Move o bombeiro para a nova posição
-                    directions_possi.append((nx, ny))
+                    direçoes_possiveis.append((nx, ny))
 
-            if directions_possi:
-                a = random.choice(directions_possi)
+            if direçoes_possiveis:
+                a = random.choice(direçoes_possiveis)
                 self.x, self.y = a[0], a[1]
 
             self.step = 0
 
     def apaga_fogo(self):
         # Obtém os vizinhos ao redor do bombeiro
-        neigh = self.neighbors(self.matriz)
+        vizinhos = self.vizinhos(self.matriz)
 
         # Verifica a posição atual do bombeiro e adiciona à lista de vizinhos, se necessário
-        if self.matriz[self.x][self.y] != "v":
-            neigh.append(self.matriz[self.x][self.y])
+        if self.matriz[self.x][self.y] != "grama":
+            vizinhos.append(self.matriz[self.x][self.y])
 
         # Itera sobre os vizinhos
-        for n in neigh:
-            if isinstance(n, Tree):
-                # Verifica se a árvore está no estágio "burning"
+        for vizinho in vizinhos:
+            if isinstance(vizinho, Arvore):
+                # Verifica se a árvore está no estágio "queimando"
                 if (
-                    n.condition == "burning"
-                ):  # Supondo que 'condition' seja o atributo que guarda o estado da árvore
+                    vizinho.condiçao == "queimando"
+                ):
                     # Apaga o fogo da árvore, criando uma nova árvore no estado saudável
-                    self.matriz[n.x][n.y] = Tree([n.x, n.y])
+                    self.matriz[vizinho.x][vizinho.y] = Arvore([vizinho.x, vizinho.y])
                     break  # Apaga o fogo de apenas uma árvore de cada vez
-            elif isinstance(n, Bush):
-                # Verifica se o arbusto está no estágio "burning"
+            elif isinstance(vizinho, Arbusto):
+                # Verifica se o arbusto está no estágio "queimando"
                 if (
-                    n.condition == "burning"
-                ):  # Supondo que 'condition' seja o atributo que guarda o estado do arbusto
+                    vizinho.condiçao == "queimando"
+                ):
                     # Apaga o fogo do arbusto, criando um novo arbusto no estado saudável
-                    self.matriz[n.x][n.y] = Bush([n.x, n.y])
+                    self.matriz[vizinho.x][vizinho.y] = Arbusto([vizinho.x, vizinho.y])
                     break  # Apaga o fogo de apenas um arbusto de cada vez
 
 
-class buttom:
-    def __init__(self, x, y, width, height):
-        self.width = width
-        self.height = height
+class Botao:
+    def __init__(self, x, y, largura, altura):
+        self.largura = largura
+        self.altura = altura
         self.x = x
         self.y = y
-        self.visible = True
+        self.visivel = True
 
-    def is_button_clicked(self, pos):
-        if self.visible:
+    def esta_clicado(self, pos):
+        if self.visivel:
             return (
-                self.x <= pos[0] <= self.x + self.width
-                and self.y <= pos[1] <= self.y + self.height
+                self.x <= pos[0] <= self.x + self.largura
+                and self.y <= pos[1] <= self.y + self.altura
             )
         else:
             return None
 
 
-class Barrier:  # representará barreiras como água ou muro, algo assim
+class Barreira:  # representará barreiras como água ou muro, algo assim
     def __init__(self, coord):
         self.x = coord[0]
         self.y = coord[1]
@@ -558,7 +554,7 @@ class Barrier:  # representará barreiras como água ou muro, algo assim
 
 
 # Classe auxiliadora que representa
-class H(Agent):
+class H(Agente):
     def __init__(self, coord):
         self.x, self.y = coord
 
@@ -566,12 +562,12 @@ class H(Agent):
         return "H"
 
 
-class House(Agent):
+class Casa(Agente):
     def __init__(self, coord):
 
-        self.condition = "safe"
+        self.condiçao = "seguro"
         self.init = True
-
+        self.coord = coord
     def coords(self, matriz):
         """
         Define as coordenadas de um quadrado 3x3 ao redor do ponto central (x, y),
@@ -580,7 +576,7 @@ class House(Agent):
         Retorna as coordenadas válidas ou None se não for possível encontrar um bloco 3x3 válido.
         """
         x, y = self.coord[0], self.coord[1]  # Coordenada inicial
-        directions = [
+        direçoes = [
             (0, 0),  # Centro (posição original)
             (0, 1),  # Deslocar para a direita
             (0, -1),  # Deslocar para a esquerda
@@ -592,83 +588,83 @@ class House(Agent):
             (-1, -1),  # Diagonal superior esquerda
         ]
 
-        for dx, dy in directions:
+        for dx, dy in direçoes:
             # Ajustar a posição central com base na direção
             nx, ny = x + dx, y + dy
             coords = [(nx + dx, ny + dy) for dx in range(-1, 2) for dy in range(-1, 2)]
 
             # Verificar se o bloco 3x3 na posição ajustada é válido
-            valid = True
+            valido = True
             for cx, cy in coords:
                 if not (0 <= cx < len(matriz) and 0 <= cy < len(matriz[0])):
-                    valid = False
+                    valido = False
                     break
-                if matriz[cx][cy] == "black":
-                    valid = False
+                if matriz[cx][cy] == "preto":
+                    valido = False
                     break
 
             # Retorna as coordenadas válidas assim que encontrar
-            if valid:
+            if valido:
                 return coords
 
         # Se nenhuma posição for válida, retorna None
         return None
 
-    def check_neighbors(self, matriz):
+    def checar_vizinhos(self, matriz):
         coordenadas_casa = self.coords()
         for coord in coordenadas_casa:
-            coord.neighbors(matriz)
-            for nx, ny in neighbors:
+            coord.vizinhos(matriz)
+            for nx, ny in self.vizinhos:
                 if 0 <= nx < len(self.matriz) and 0 <= ny < len(self.matriz[0]):
-                    neighbor = self.matriz[nx][ny]
+                    vizinho = self.matriz[nx][ny]
                     if (
-                        isinstance(neighbor, (Tree, Bush))
-                        and neighbor.condition == "burning"
+                        isinstance(vizinho, (Arvore, Arbusto))
+                        and vizinho.condiçao == "queimando"
                     ):
-                        self.life -= 0.01
+                        self.vida -= 0.01
                         return
 
-    def check_life(self):
-        if self.life <= 0:
-            self.condition = "fim"
+    def checar_vida(self):
+        if self.vida <= 0:
+            self.condiçao = "fim"
 
-    def update_condition(self):
-        self.check_neighbors()
-        self.check_life()
+    def condiçao_de_atualizaçao(self):
+        self.checar_vizinhos()
+        self.checar_vida()
 
 
 class vento:
-    def __init__(self, direction=None):
-        lista_directions = ["N", "S", "L", "O", "NO", "NE", "SE", "SO"]
-        self.directions = []
-        if direction == 1:
-            direction = random.choice(lista_directions)
-        if direction == "L":
-            self.directions = [(0, 1), (1, 1), (-1, 1)]
-        elif direction == "O":
-            self.directions = [(0, -1), (1, -1), (-1, -1)]
-        elif direction == "S":
-            self.directions = [(1, 0), (1, 1), (1, -1)]
-        elif direction == "N":
-            self.directions = [(-1, 0), (-1, 1), (-1, -1)]
-        elif direction == "SE":
-            self.directions = [(0, 1), (1, 0), (1, 1)]
-        elif direction == "NE":
-            self.directions = [(0, 1), (-1, 0), (-1, 1)]
-        elif direction == "SO":
-            self.directions = [(0, -1), (1, 0), (1, -1)]
-        elif direction == "NO":
-            self.directions = [(0, -1), (-1, 0), (-1, -1)]
+    def __init__(self, direçao=None):
+        lista_direçoes = ["N", "S", "L", "O", "NO", "NE", "SE", "SO"]
+        self.direçoes = []
+        if direçao == 1:
+            direçao = random.choice(lista_direçoes)
+        if direçao == "L":
+            self.direçoes = [(0, 1), (1, 1), (-1, 1)]
+        elif direçao == "O":
+            self.direçoes = [(0, -1), (1, -1), (-1, -1)]
+        elif direçao == "S":
+            self.direçoes = [(1, 0), (1, 1), (1, -1)]
+        elif direçao == "N":
+            self.direçoes = [(-1, 0), (-1, 1), (-1, -1)]
+        elif direçao == "SE":
+            self.direçoes = [(0, 1), (1, 0), (1, 1)]
+        elif direçao == "NE":
+            self.direçoes = [(0, 1), (-1, 0), (-1, 1)]
+        elif direçao == "SO":
+            self.direçoes = [(0, -1), (1, 0), (1, -1)]
+        elif direçao == "NO":
+            self.direçoes = [(0, -1), (-1, 0), (-1, -1)]
 
-    def neighbors_vento(self, tree, matriz):
+    def vizinhos_vento(self, arvore, matriz):
         lista = []
-        if self.directions:
-            for dx, dy in self.directions:
-                nx, ny = tree.x + dx, tree.y + dy
+        if self.direçoes:
+            for dx, dy in self.direçoes:
+                nx, ny = arvore.x + dx, arvore.y + dy
                 if (
                     0 <= nx < len(matriz)
                     and 0 <= ny < len(matriz[0])
-                    and isinstance(matriz[nx][ny], Tree)
+                    and isinstance(matriz[nx][ny], Arvore)
                 ):
                     lista.append(matriz[nx][ny])
 

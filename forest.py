@@ -1,48 +1,47 @@
-import agents as agent
+import agents as ag
 import random
 
 
-class Forest:
+class Floresta:
     def __init__(self, matriz):
         self.matriz = matriz
         self.n = len(matriz)
         self.m = len(matriz[0])
-        self.vent = agent.vento()
-        self.surge_trees = False
+        self.vent = ag.vento()
+        self.surgir_arvores = False
 
     def incendio(self):
-        for i in range(5):
-            k = random.randint(0, self.n - 1)
-            l = random.randint(0, self.m - 1)
-            if (
-                isinstance(self.matriz[k][l], agent.Tree)
-                and self.matriz[k][l].condition == "alive"
-            ):
-                self.matriz[k][l].attempt_to_burn(self.matriz, self.vent)
-                break
+        k = random.randint(0, self.n - 1)
+        l = random.randint(0, self.m - 1)
+        if (
+            isinstance(self.matriz[k][l], ag.Arvore)
+            and self.matriz[k][l].condiçao == "vivo"
+        ):
+            self.matriz[k][l].propagar_fogo(self.matriz, self.vent)
+                
 
-    def update_forest(self):
-        fire = True
+    def atualizar_floresta(self):
+        fogo = True
         for i in range(self.n):
             for j in range(self.m):
-                if isinstance(self.matriz[i][j], agent.Tree) or isinstance(
-                    self.matriz[i][j], agent.Bush
+                if isinstance(self.matriz[i][j], ag.Arvore) or isinstance(
+                    self.matriz[i][j], ag.Arbusto
                 ):
                     if (
-                        self.matriz[i][j].condition == "burning"
-                        or self.matriz[i][j].condition == "burned"
+                        self.matriz[i][j].condiçao == "queimando"
+                        or self.matriz[i][j].condiçao == "queimado"
                     ):
-                        fire = False
+                        fogo = False
 
-                    self.matriz[i][j].update_condition(self)
+                    self.matriz[i][j].condiçao_de_atualizaçao(self)
 
-                if self.surge_trees:
+                if self.surgir_arvores:
                     rand = random.randint(1, 200)
                     if rand > 195:
-                        if self.matriz[i][j] == "v":
-                            self.matriz[i][j] = agent.Tree([i, j])
+                        if self.matriz[i][j] == "grama":
+                            self.matriz[i][j] = ag.Arvore([i, j])
                     if rand == 1:
-                        if self.matriz[i][j] == "v":
-                            self.matriz[i][j] = agent.Bush([i, j])
-        if fire:
+                        if self.matriz[i][j] == "grama":
+                            self.matriz[i][j] = ag.Arbusto([i, j])
+        if fogo:
             self.incendio()  # Caso não tenha fogo, causa um incêndio aleatório

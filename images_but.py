@@ -1,106 +1,106 @@
 import pygame
 import os
-import agents as agent
+import agents as ag
 
 pygame.init()
 
-size_of_w = pygame.display.get_desktop_sizes()
-tela_x = int(size_of_w[0][0])
-tela_y = int(size_of_w[0][1])
+tamanho_da_tela = pygame.display.get_desktop_sizes()
+tela_x = int(tamanho_da_tela[0][0])
+tela_y = int(tamanho_da_tela[0][1])
 CARRO_BOMBEIRO_IMG = pygame.image.load(
     os.path.join("images", "carro_bombeiros (1).png")
 )
-CHICKEN_DEAD_IMG = pygame.image.load(
+FRANGO_ASSADO_IMG = pygame.image.load(
     os.path.join("images", "Cooked_Chicken_JE3_BE3.png")
 )
-ADD_CHICKEN_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (13).png"))
-EGG_IMG = pygame.image.load(os.path.join("images", "egg.png"))
-BUSH_BURN_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (12).png"))
-BUSH_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (11).png"))
-CHICKEN_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (10).png"))
-TREE_ALIVE_IMG = pygame.image.load(os.path.join("images", "Tree_Small.png"))
-TREE_BURNING_IMG = pygame.image.load(os.path.join("images", "Fire_Small.png"))
-WATER_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (2).png"))
-START_IMG = pygame.image.load(os.path.join("images", "shadedDark42.png"))
-TREE_BURNED_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (4).png"))
-BUTTOM_UP_IMG = pygame.image.load(os.path.join("images", "shadedDark03.png"))
-BUTTOM_LEFT_IMG = pygame.image.load(os.path.join("images", "shadedDark05.png"))
-BUTTOM_DOWN_IMG = pygame.image.load(os.path.join("images", "shadedDark10.png"))
-BUTTOM_RIGHT_IMG = pygame.image.load(os.path.join("images", "shadedDark06.png"))
-BUTTOM_X_IMG = pygame.image.load(os.path.join("images", "shadedDark35.png"))
-BUTTOM_PAUSE_IMG = pygame.image.load(os.path.join("images", "shadedDark44.png"))
-FIREMAN_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (5).png"))
-FIREMAN_BURNING2_IMG = pygame.image.load(
+GALINHA_FRENTE_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (13).png"))
+OVO_IMG = pygame.image.load(os.path.join("images", "egg.png"))
+ARBUSTO_QUEIMANDO_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (12).png"))
+ARBUSTO_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (11).png"))
+GALINHA_TRAS_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (10).png"))
+ARVORE_VIVA_IMG = pygame.image.load(os.path.join("images", "Tree_Small.png"))
+ARVORE_QUEIMANDO_IMG = pygame.image.load(os.path.join("images", "Fire_Small.png"))
+AGUA_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (2).png"))
+BOTAO_START_IMG = pygame.image.load(os.path.join("images", "shadedDark42.png"))
+ARVORE_QUEIMADA_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (4).png"))
+BOTAO_CIMA_IMG = pygame.image.load(os.path.join("images", "shadedDark03.png"))
+BOTAO_ESQUERDA_IMG = pygame.image.load(os.path.join("images", "shadedDark05.png"))
+BOTAO_BAIXO_IMG = pygame.image.load(os.path.join("images", "shadedDark10.png"))
+BOTAO_DIREITA_IMG = pygame.image.load(os.path.join("images", "shadedDark06.png"))
+BOTAO_DE_X_IMG = pygame.image.load(os.path.join("images", "shadedDark35.png"))
+BOTAO_PAUSE_IMG = pygame.image.load(os.path.join("images", "shadedDark44.png"))
+BOMBEIRO_IMG = pygame.image.load(os.path.join("images", "pixil-frame-0 (5).png"))
+BOMBEIRO_QUEIMANDO2_IMG = pygame.image.load(
     os.path.join("images", "pixil-frame-0 (8).png")
 )
-FIREMAN_BURNING1_IMG = pygame.image.load(
+BOMBEIRO_QUEIMANDO1_IMG = pygame.image.load(
     os.path.join("images", "pixil-frame-0 (9).png")
 )
 
-but_size = tela_x // 80
-cell_size = tela_x // 150
+tamanho_botao = tela_x // 80
+tamanho_celula = tela_x // 150
 CARRO_BOMBEIRO_IMG = pygame.transform.scale(
     CARRO_BOMBEIRO_IMG,
     (CARRO_BOMBEIRO_IMG.get_width() // 80, CARRO_BOMBEIRO_IMG.get_height() // 80),
 )
-ADD_CHICKEN_IMG = pygame.transform.scale(
-    ADD_CHICKEN_IMG, (4 * cell_size, 4 * cell_size)
+GALINHA_FRENTE_IMG = pygame.transform.scale(
+    GALINHA_FRENTE_IMG, (4 * tamanho_celula, 4 * tamanho_celula)
 )
-CHICKEN_DEAD_IMG = pygame.transform.scale(CHICKEN_DEAD_IMG, (cell_size, cell_size))
-EGG_IMG = pygame.transform.scale(EGG_IMG, (0.5 * cell_size, 0.5 * cell_size))
-BUSH_BURN_IMG = pygame.transform.scale(BUSH_BURN_IMG, (cell_size, cell_size))
-BUSH_IMG = pygame.transform.scale(BUSH_IMG, (cell_size, cell_size))
-CHICKEN_IMG = pygame.transform.scale(CHICKEN_IMG, (1.5 * cell_size, 1.5 * cell_size))
-TREE_ALIVE_IMG = pygame.transform.scale(TREE_ALIVE_IMG, (cell_size, cell_size))
-TREE_BURNING_IMG = pygame.transform.scale(TREE_BURNING_IMG, (cell_size, cell_size))
-WATER_IMG = pygame.transform.scale(WATER_IMG, (cell_size, cell_size))
-TREE_BURNED_IMG = pygame.transform.scale(TREE_BURNED_IMG, (cell_size, cell_size))
-BUTTOM_UP_IMG = pygame.transform.scale(BUTTOM_UP_IMG, (1.5 * but_size, 1.5 * but_size))
-BUTTOM_LEFT_IMG = pygame.transform.scale(
-    BUTTOM_LEFT_IMG, (1.5 * but_size, 1.5 * but_size)
+FRANGO_ASSADO_IMG = pygame.transform.scale(FRANGO_ASSADO_IMG, (tamanho_celula, tamanho_celula))
+OVO_IMG = pygame.transform.scale(OVO_IMG, (0.5 * tamanho_celula, 0.5 * tamanho_celula))
+ARBUSTO_QUEIMANDO_IMG = pygame.transform.scale(ARBUSTO_QUEIMANDO_IMG, (tamanho_celula, tamanho_celula))
+ARBUSTO_IMG = pygame.transform.scale(ARBUSTO_IMG, (tamanho_celula, tamanho_celula))
+GALINHA_TRAS_IMG = pygame.transform.scale(GALINHA_TRAS_IMG, (1.5 * tamanho_celula, 1.5 * tamanho_celula))
+ARVORE_VIVA_IMG = pygame.transform.scale(ARVORE_VIVA_IMG, (tamanho_celula, tamanho_celula))
+ARVORE_QUEIMANDO_IMG = pygame.transform.scale(ARVORE_QUEIMANDO_IMG, (tamanho_celula, tamanho_celula))
+AGUA_IMG = pygame.transform.scale(AGUA_IMG, (tamanho_celula, tamanho_celula))
+ARVORE_QUEIMADA_IMG = pygame.transform.scale(ARVORE_QUEIMADA_IMG, (tamanho_celula, tamanho_celula))
+BOTAO_CIMA_IMG = pygame.transform.scale(BOTAO_CIMA_IMG, (1.5 * tamanho_botao, 1.5 * tamanho_botao))
+BOTAO_ESQUERDA_IMG = pygame.transform.scale(
+    BOTAO_ESQUERDA_IMG, (1.5 * tamanho_botao, 1.5 * tamanho_botao)
 )
-BUTTOM_DOWN_IMG = pygame.transform.scale(
-    BUTTOM_DOWN_IMG, (1.5 * but_size, 1.5 * but_size)
+BOTAO_BAIXO_IMG = pygame.transform.scale(
+    BOTAO_BAIXO_IMG, (1.5 * tamanho_botao, 1.5 * tamanho_botao)
 )
-BUTTOM_RIGHT_IMG = pygame.transform.scale(
-    BUTTOM_RIGHT_IMG, (1.5 * but_size, 1.5 * but_size)
+BOTAO_DIREITA_IMG = pygame.transform.scale(
+    BOTAO_DIREITA_IMG, (1.5 * tamanho_botao, 1.5 * tamanho_botao)
 )
-BUTTOM_X_IMG = pygame.transform.scale(BUTTOM_X_IMG, (1.5 * but_size, 1.5 * but_size))
-FIREMAN_IMG = pygame.transform.scale(FIREMAN_IMG, (1.5 * cell_size, 1.5 * cell_size))
-FIREMAN_BURNING1_IMG = pygame.transform.scale(
-    FIREMAN_BURNING1_IMG, (1.5 * cell_size, 1.5 * cell_size)
+BOTAO_DE_X_IMG = pygame.transform.scale(BOTAO_DE_X_IMG, (1.5 * tamanho_botao, 1.5 * tamanho_botao))
+BOMBEIRO_IMG = pygame.transform.scale(BOMBEIRO_IMG, (1.5 * tamanho_celula, 1.5 * tamanho_celula))
+BOMBEIRO_QUEIMANDO1_IMG = pygame.transform.scale(
+BOMBEIRO_QUEIMANDO1_IMG, (1.5 * tamanho_celula, 1.5 * tamanho_celula)
 )
-FIREMAN_BURNING2_IMG = pygame.transform.scale(
-    FIREMAN_BURNING2_IMG, (1.5 * cell_size, 1.5 * cell_size)
+BOMBEIRO_QUEIMANDO2_IMG = pygame.transform.scale(
+    BOMBEIRO_QUEIMANDO2_IMG, (1.5 * tamanho_celula, 1.5 * tamanho_celula)
 )
-START_IMG = pygame.transform.scale(START_IMG, (4 * but_size, 2 * but_size))
-BUTTOM_PAUSE_IMG = pygame.transform.scale(
-    BUTTOM_PAUSE_IMG, (4 * but_size, 2 * but_size)
+BOTAO_START_IMG = pygame.transform.scale(BOTAO_START_IMG, (4 * tamanho_botao, 2 * tamanho_botao))
+BOTAO_PAUSE_IMG = pygame.transform.scale(
+    BOTAO_PAUSE_IMG, (4 * tamanho_botao, 2 * tamanho_botao)
 )
 
-add_fireman_but = agent.buttom(280, 200, 20, 20)
+botao_adicionar_bombeiros = ag.Botao(280, 200, 20, 20)
 
-button_width, button_height = START_IMG.get_width(), START_IMG.get_height()
-button_x, button_y = tela_x // 2, tela_y // 2
-start_but = agent.buttom(button_x, button_y, button_width, button_height)
+largura_botao, altura_botao = BOTAO_START_IMG.get_width(), BOTAO_START_IMG.get_height()
+botao_x, botao_y = tela_x // 2, tela_y // 2
+botao_start = ag.Botao(botao_x, botao_y, largura_botao, altura_botao)
 
-button_x, button_y = tela_x // 10, 0.42 * tela_y
-button_width, button_height = BUTTOM_UP_IMG.get_width(), BUTTOM_UP_IMG.get_height()
-up_but = agent.buttom(button_x, button_y, button_width, button_height)
+botao_x, botao_y = tela_x // 10, 0.42 * tela_y
+largura_botao, altura_botao = BOTAO_CIMA_IMG.get_width(), BOTAO_CIMA_IMG.get_height()
+botao_cima = ag.Botao(botao_x, botao_y, largura_botao, altura_botao)
 
-button_y = 0.525 * tela_y
-down_but = agent.buttom(button_x, button_y, button_width, button_height)
-button_x = 0.07 * tela_x
-button_y = 0.475 * tela_y
-left_but = agent.buttom(button_x, button_y, button_width, button_height)
-button_x = 0.13 * tela_x
-right_but = agent.buttom(button_x, button_y, button_width, button_height)
-button_x = 0.1 * tela_x
-x_but = agent.buttom(button_x, button_y, button_width, button_height)
-button_x, button_y = 0.003 * tela_x * cell_size, 0.03 * tela_y * cell_size
-button_width, button_height = (
-    BUTTOM_PAUSE_IMG.get_width(),
-    BUTTOM_PAUSE_IMG.get_height(),
+botao_y = 0.525 * tela_y
+botao_baixo = ag.Botao(botao_x, botao_y, largura_botao, altura_botao)
+botao_x = 0.07 * tela_x
+botao_y = 0.475 * tela_y
+botao_esquerda = ag.Botao(botao_x, botao_y, largura_botao, altura_botao)
+botao_x = 0.13 * tela_x
+botao_direita = ag.Botao(botao_x, botao_y, largura_botao, altura_botao)
+botao_x = 0.1 * tela_x
+botao_de_x = ag.Botao(botao_x, botao_y, largura_botao, altura_botao)
+botao_x, botao_y = 0.003 * tela_x * tamanho_celula, 0.03 * tela_y * tamanho_celula
+largura_botao, altura_botao = (
+    BOTAO_PAUSE_IMG.get_width(),
+    BOTAO_PAUSE_IMG.get_height(),
 )
-pause_but = agent.buttom(button_x, button_y, button_width, button_height)
-add_chicken_but = agent.buttom(280, 80, 20, 20)
+botao_pause = ag.Botao(botao_x, botao_y, largura_botao, altura_botao)
+botao_adicionar_galinha = ag.Botao(280, 80, 20, 20)

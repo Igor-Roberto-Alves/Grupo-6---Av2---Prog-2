@@ -6,6 +6,7 @@ Ademais, teoricamente, programar as barreiras para surgirem nas bordas da área 
 também não seria difícil.  Peço desculpa por não ter terminado até agora as coisas que fui incumbido de fazer, vou tentar terminar amanhã.
 """
 import random
+import muro
 
 def city_area(matriz):
     """Define uma área aleatória na matriz."""
@@ -52,5 +53,10 @@ if __name__ == "__main__":
     casas = houses(matriz, area)
     for i in casas:
         matriz[i[1]][i[0]] = 2  # Neste teste as casas são marcadas com um valor diferente (2)
+    for linha in matriz:
+        print(linha)
+
+    #Criar Muros
+    muro.criar_caminho(matriz)
     for linha in matriz:
         print(linha)

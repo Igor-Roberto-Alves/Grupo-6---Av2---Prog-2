@@ -56,7 +56,7 @@ class Forest:
             "trees_burned": 0,
             "bushes": 0,
             "water": 0,
-            "empty": 0
+            "empty": 0,
         }
 
         for i in range(self.n):
@@ -75,5 +75,5 @@ class Forest:
                     stats["water"] += 1
                 elif self.matriz[i][j] != "black":
                     stats["empty"] += 1
-        
+
         return stats

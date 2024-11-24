@@ -173,7 +173,7 @@ def init_screen():
         [
             random.choices(
                 [agent.Bush((i, j)), agent.Tree((i, j)), "v"],
-                weights=[2, 3, 1],
+                weights=[1, 1, 1],
                 k=1,
             )[0]
             for j in range(im.tela_x // im.cell_size)
@@ -197,10 +197,10 @@ def main():
     start = False  # Controle para verificar se o incêndio deve iniciar
     start2 = False
     loading = False
-    num_rios = random.choice(range(1, 4))
+    num_rios = random.choice(range(3, 7))
     num_fireman = 20
     rios = [river_maker(matriz) for _ in range(num_rios)]
-    intensity_rain = 0
+    intensity_rain = 10
     bombeiros = [agent.bombeiro(matriz) for _ in range(num_fireman)]
     birds = [agent.Bird(matriz) for _ in range(150)]
     forest.surge_trees = False
@@ -243,10 +243,6 @@ def main():
     slider_fireman = Slider(
         screen, 20, 210, 250, 12, min=1, max=1000, step=1, initial=num_fireman
     )
-    """slider_rio = Slider(
-        screen, 20, 290, 250, 12, min=1, max=5, step=1, initial=num_rios
-    )
-"""
 
     slider_bird = Slider(
         screen, 20, 290, 250, 12, min=1, max=500, step=1, initial=number_birds
@@ -368,17 +364,13 @@ def main():
                         for bird in birds:
                             bird.update_condition(birds)
                         birds[0].at_listbirds(birds)
-                    else:
-                        birds.append(agent.Bird(matriz))
+                        for _ in range(5):
+                            birds.append(agent.Bird(matriz))
 
         # Verifica se a velocidade foi alterada
         if slider.getValue() != steps_by_second:
             steps_by_second = slider.getValue()
             pygame.time.set_timer(TIMERSTEPEVENT, 1000 // steps_by_second)
-
-        """if slider_rio.getValue() != num_rios:
-            num_rios = slider_rio.getValue()
-            rios = [river_maker(matriz) for _ in range(num_rios)]"""
 
         if slider_chicken.getValue() != number_chickens:
             number_chickens = slider_chicken.getValue()

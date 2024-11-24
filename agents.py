@@ -130,7 +130,7 @@ class Animal(Agent):
                 self.status = "final"
 
     def update_condition(self):
-        if isinstance(self.matriz[self.x][self.y],Bush):
+        if isinstance(self.matriz[self.x][self.y], Bush):
             self.matriz[self.x][self.y].life -= 0.1
 
         if not self.egg and self.status != "dead" and self.status != "final":
@@ -152,7 +152,6 @@ class Animal(Agent):
             if self.step == 20:
                 self.egg = False
                 self.life = 1
-
 
         return None
 
@@ -193,8 +192,6 @@ class Animal(Agent):
                 return Animal(self.matriz, self.x, self.y, True)
 
 
-
-
 class Bird:
     def __init__(self, matrix, x=None, y=None):
         if x and y:
@@ -212,8 +209,7 @@ class Bird:
         self.lifespan = random.randint(20, 50)
         self.matrix = matrix
 
-
-    def move(self, distance=5):
+    def move(self, distance=5, mul=4):
         """
         Move o pássaro de acordo com a presença de fogo ou aleatoriamente.
 
@@ -227,16 +223,21 @@ class Bird:
 
         # Coordenadas das 8 células ao redor.
         directions = [
-            (-1, -1), (-1, 0), (-1, 1),  # Cima
-            (0, -1),         (0, 1),     # Lados
-            (1, -1), (1, 0), (1, 1)      # Baixo
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),  # Cima
+            (0, -1),
+            (0, 1),  # Lados
+            (1, -1),
+            (1, 0),
+            (1, 1),  # Baixo
         ]
 
         fire_detected = False
         safe_moves = []
 
         for dx, dy in directions:
-            nx, ny = self.x + dx, self.y + dy
+            nx, ny = self.x + dx * mul, self.y + dy * mul
 
             if 0 <= nx < rows and 0 <= ny < cols:
                 cell = self.matrix[nx][ny]
@@ -258,7 +259,10 @@ class Bird:
             self.x, self.y = random.choice(safe_moves)
 
         # Verifica se o pássaro saiu da matriz ou está em uma posição inválida.
-        if not (0 <= self.x < rows and 0 <= self.y < cols) or self.matrix[self.x][self.y] == "black":
+        if (
+            not (0 <= self.x < rows and 0 <= self.y < cols)
+            or self.matrix[self.x][self.y] == "black"
+        ):
             self.status = "dead"
 
     def plant_tree(self, seed_prob=0.05, bush_prob=0.05):
@@ -269,7 +273,6 @@ class Bird:
             self.matrix[self.x][self.y] = Tree([self.x, self.y])
         elif self.matrix[self.x][self.y] == "v" and random.random() < bush_prob:
             self.matrix[self.x][self.y] = Bush([self.x, self.y])
-
 
     def check_fire(self, fire_radius=1):
         if self.status != "alive":
@@ -405,7 +408,7 @@ class Tree(Agent):
                 self.attempt_to_burn(matriz, vent)  # Propaga o fogo para os vizinhos
             if self.count > 4:  # Queima por 2 etapas antes de ser marcada como "burned"
                 self.next_condition = "burned"
-        
+
     def __repr__(self):
         """
         Representação textual da árvore na matriz:
@@ -427,12 +430,11 @@ class Bush(Tree):
         super().__init__(coord)
         self.umidade = random.randint(50, 60)  # Bushes têm umidade menor que árvores
         self.life = 1
-    
+
     def update_condition(self, forest):
         if self.life <= 0:
             forest.matriz[self.x][self.y] = "v"
         return super().update_condition(forest)
-
 
 
 class Rain:
@@ -456,7 +458,7 @@ class Rain:
     def rain_drop(self):
         neigh_drop = []  # vizinhança molhada
         for n in self.size_neighbors_rain():
-            if random.randint(1, 100) < self.intensity:
+            if random.randint(1, 100) <= self.intensity:
                 neigh_drop.append(n)
         return neigh_drop
 
@@ -715,19 +717,23 @@ class vento:
 
         return lista
 
-#Estaremos melhorando a implementação o quanto antes
+
+# Estaremos melhorando a implementação o quanto antes
 class agua(Agent):
-    def __init__(self,coord):
-        self.x=coord[0]
-        self.y=coord[1]
+    def __init__(self, coord):
+        self.x = coord[0]
+        self.y = coord[1]
+
 
 class River(Agent):
-    def __init__(self, coord, matriz): 
+    def __init__(self, coord, matriz):
         self.matriz = matriz
         self.aguas = []
-        
+
         # Adiciona somente as coordenadas válidas
         for i in coord:
             x, y = i
-            if 0 <= x < len(matriz) and 0 <= y < len(matriz[0]):  # Verifica se a coordenada está dentro dos limites da matriz
+            if 0 <= x < len(matriz) and 0 <= y < len(
+                matriz[0]
+            ):  # Verifica se a coordenada está dentro dos limites da matriz
                 self.aguas.append(agua(i))

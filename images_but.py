@@ -88,14 +88,14 @@ button_width, button_height = START_IMG.get_width(), START_IMG.get_height()
 button_x, button_y = tela_x // 2, tela_y // 2
 start_but = agent.buttom(button_x, button_y, button_width, button_height)
 
-button_x, button_y = tela_x // 10, 0.42 * tela_y
+button_x, button_y = tela_x // 10, 0.42 * tela_y + 80
 button_width, button_height = BUTTOM_UP_IMG.get_width(), BUTTOM_UP_IMG.get_height()
 up_but = agent.buttom(button_x, button_y, button_width, button_height)
 
-button_y = 0.525 * tela_y
+button_y = 0.525 * tela_y + 80
 down_but = agent.buttom(button_x, button_y, button_width, button_height)
 button_x = 0.07 * tela_x
-button_y = 0.475 * tela_y
+button_y = 0.475 * tela_y + 80
 left_but = agent.buttom(button_x, button_y, button_width, button_height)
 button_x = 0.13 * tela_x
 right_but = agent.buttom(button_x, button_y, button_width, button_height)

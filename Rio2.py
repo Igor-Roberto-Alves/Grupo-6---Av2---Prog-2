@@ -4,11 +4,11 @@ import random
 import agents as agent
 import copy
 
-def river_maker(matriz):
-    pontos_x=[i for i in range(matriz[0])]
-    pontos_y=[i for i in range(matriz)]
-    A=(random.choice(pontos_x,random.choice(pontos_y)))
-    B=(random.choice(pontos_x,random.choice(pontos_y)))
+"""def river_maker(matriz):
+    pontos_x=[i for i in range(len(matriz[0]))]
+    pontos_y=[i for i in range(len(matriz))]
+    A=(random.choice(pontos_x),random.choice(pontos_y))
+    B=(random.choice(pontos_x),random.choice(pontos_y))
     passos=[]
     rio=[A]
     delta_x = B[0] - A[0]
@@ -23,19 +23,76 @@ def river_maker(matriz):
         passos.extend([(0, 1)] * delta_y)  # Move para cima
     elif delta_y < 0:
         passos.extend([(0, -1)] * abs(delta_y))  # Move para baixo
-
+   
     for _ in range(2): #faz duas fazes
-        este_caminho= random.choice(passos.copy())
-        aqui= A
+        random.shuffle(passos)
+        aqui_x= A[0]
+        aqui_y= A[1]
 
-        for i in este_caminho:
-            aqui=(aqui[0]+i[0],aqui[1]+i[1])
-            rio.append(aqui)
+        for i in passos:
+            aqui_x+=i[0]
+            aqui_y+=i[1]
+            r=(aqui_x,aqui_y)
+            rio.append(r)
     
-    for i in range(matriz):
+    for i in pontos_y:
         start=False
-        for j in range(i):
+        for j in pontos_x:
             if start:
-                if matriz[i][j]
+                if (j,i) in rio:
+                    start=False
+                else:
+                    rio.append((j,i))
+                
+            else:
+              if (j,i) in rio:
+                    start=True  
+    return rio
 
-            
+if __name__=="__main__":
+    matriz= [[0]*10 for _ in range(10)]
+    for i in river_maker(matriz):
+        matriz[i[1]][i[0]]=1
+    print(matriz)
+
+"""
+def river_maker(matriz):
+    pontos_x=[i for i in range(len(matriz[0]))]
+    pontos_y=[i for i in range(len(matriz))]
+    A=(random.choice(pontos_x),random.choice(pontos_y))
+    B=(random.choice(pontos_x),random.choice(pontos_y))
+    passos=[]
+    rio=[A]
+    delta_x = B[0] - A[0]
+    delta_y = B[1] - A[1]
+    # Movendo-se ao longo do eixo X
+    if delta_x > 0:
+        passos.extend([(1, 0)] * delta_x)  # Move para a direita
+    elif delta_x < 0:
+        passos.extend([(-1, 0)] * abs(delta_x))  # Move para a esquerda
+    # Movendo-se ao longo do eixo Y
+    if delta_y > 0:
+        passos.extend([(0, 1)] * delta_y)  # Move para cima
+    elif delta_y < 0:
+        passos.extend([(0, -1)] * abs(delta_y))  # Move para baixo
+    print(A)
+    print(B)
+    print(passos)
+    
+    random.shuffle(passos)
+    print(passos)
+    aqui_x= A[0]
+    aqui_y= A[1]
+    for i in passos:
+        aqui_x+=i[0]
+        aqui_y+=i[1]
+        r=(aqui_x,aqui_y)
+        rio.append(r)
+    return rio
+    
+  
+if __name__=="__main__":
+    matriz= [[0]*10 for _ in range(10)]
+    for i in river_maker(matriz):
+        matriz[i[1]][i[0]]=1
+    print(matriz)

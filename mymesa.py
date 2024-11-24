@@ -56,10 +56,8 @@ def draw_rio(screen, borda, cell_size, map_width, map_height):
     for (x, y) in borda:
         # Verifica se as coordenadas estão dentro dos limites da tela
         if 0 <= x < map_height and 0 <= y < map_width:
-            pygame.draw.rect(
-                screen,
-                (0, 0, 255),  # Azul para representar água
-                (y * cell_size, x * cell_size, cell_size, cell_size),
+            screen.blit(
+                im.WATER_IMG, (y * cell_size, x * cell_size)
             )
 
 

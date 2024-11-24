@@ -2,7 +2,7 @@ import pygame
 import time
 import agents as agent
 from forest import Forest
-from Rio import river_maker
+from Rio2 import river_maker
 import images_but as im
 import random
 
@@ -149,9 +149,9 @@ def main():
     start = False  # Controle para verificar se o incêndio deve iniciar
     start2 = False
     loading = False
-    num_rios = 1
+    num_rios = random.choice(range(4))
     num_fireman = 20
-    rios = [river_maker(matriz)]
+    rios = [river_maker(matriz) for _ in range(num_rios)]
     bombeiros = [agent.bombeiro(matriz) for _ in range(num_fireman)]
     birds = [agent.Bird(matriz) for _ in range(10)]
     forest.surge_trees = False
@@ -188,10 +188,10 @@ def main():
     slider_fireman = Slider(
         screen, 20, 210, 250, 12, min=1, max=200, step=1, initial=num_fireman
     )
-    slider_rio = Slider(
+    """slider_rio = Slider(
         screen, 20, 290, 250, 12, min=1, max=5, step=1, initial=num_rios
     )
-
+"""
     while running:
         events = pygame.event.get()
         for event in events:
@@ -288,9 +288,9 @@ def main():
             steps_by_second = slider.getValue()
             pygame.time.set_timer(TIMERSTEPEVENT, 1000 // steps_by_second)
 
-        if slider_rio.getValue() != num_rios:
+        """if slider_rio.getValue() != num_rios:
             num_rios = slider_rio.getValue()
-            rios = [river_maker(matriz) for _ in range(num_rios)]
+            rios = [river_maker(matriz) for _ in range(num_rios)]"""
 
         if slider_chicken.getValue() != number_chickens:
             number_chickens = slider_chicken.getValue()

@@ -147,7 +147,7 @@ def main():
     start = False  # Controle para verificar se o incêndio deve iniciar
     start2 = False
     loading = False
-    num_rios = random.choice(range(4))
+    num_rios = random.choice(range(1, 4))
     num_fireman = 20
     rios = [river_maker(matriz) for _ in range(num_rios)]
     bombeiros = [agent.bombeiro(matriz) for _ in range(num_fireman)]

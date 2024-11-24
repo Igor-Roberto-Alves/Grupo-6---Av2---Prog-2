@@ -2,6 +2,7 @@
 # Vou tentar refazer um prototipo(que fiz ontem) de rio que tenha um formato mais agradavel(sem ilhas e tentando não sair do mapa)
 import random
 import agents as agent
+import images_but as im
 import copy
 
 """def river_maker(matriz):
@@ -57,8 +58,8 @@ if __name__=="__main__":
 
 """
 def river_maker(matriz):
-    pontos_x=[i for i in range(len(matriz[0]))]
-    pontos_y=[i for i in range(len(matriz))]
+    pontos_x=[i for i in range(0, len(matriz))]
+    pontos_y=[j for j in range(im.tela_x // im.cell_size //4, len(matriz[0]))]
     A=(random.choice(pontos_x),random.choice(pontos_y))
     B=(random.choice(pontos_x),random.choice(pontos_y))
     passos=[]
@@ -75,12 +76,12 @@ def river_maker(matriz):
         passos.extend([(0, 1)] * delta_y)  # Move para cima
     elif delta_y < 0:
         passos.extend([(0, -1)] * abs(delta_y))  # Move para baixo
-    print(A)
-    print(B)
-    print(passos)
+    #print(A)
+    #print(B)
+    #print(passos)
     
     random.shuffle(passos)
-    print(passos)
+    #print(passos)
     aqui_x= A[0]
     aqui_y= A[1]
     for i in passos:

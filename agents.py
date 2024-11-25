@@ -635,5 +635,3 @@ class vento:
                     lista.append(matriz[nx][ny])
 
         return lista
-
-

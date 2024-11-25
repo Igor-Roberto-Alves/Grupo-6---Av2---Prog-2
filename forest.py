@@ -1,5 +1,6 @@
 import agents as agent
 import random
+import images_but as im
 
 
 class Forest:
@@ -11,20 +12,19 @@ class Forest:
         self.surge_trees = False
 
     def incendio(self):
-        for i in range(5):
+        for _ in range(5):
+            l = random.randint(im.tela_x // im.cell_size // 4, self.m - 1)
             k = random.randint(0, self.n - 1)
-            l = random.randint(0, self.m - 1)
             if (
                 isinstance(self.matriz[k][l], agent.Tree)
                 and self.matriz[k][l].condition == "alive"
             ):
                 self.matriz[k][l].attempt_to_burn(self.matriz, self.vent)
-                break
 
     def update_forest(self):
         fire = True
-        for i in range(self.n):
-            for j in range(self.m):
+        for i in range(0, self.n):
+            for j in range(im.tela_x // im.cell_size // 4, self.m):
                 if isinstance(self.matriz[i][j], agent.Tree) or isinstance(
                     self.matriz[i][j], agent.Bush
                 ):
@@ -37,14 +37,6 @@ class Forest:
 
                     self.matriz[i][j].update_condition(self)
 
-                if self.surge_trees:
-                    rand = random.randint(1, 200)
-                    if rand > 195:
-                        if self.matriz[i][j] == "v":
-                            self.matriz[i][j] = agent.Tree([i, j])
-                    if rand == 1:
-                        if self.matriz[i][j] == "v":
-                            self.matriz[i][j] = agent.Bush([i, j])
         if fire:
             self.incendio()  # Caso não tenha fogo, causa um incêndio aleatório
 

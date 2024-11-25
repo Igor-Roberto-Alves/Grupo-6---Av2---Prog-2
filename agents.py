@@ -1,3 +1,4 @@
+
 import random
 
 
@@ -359,14 +360,13 @@ class Tree(Agent):
                 if vent.directions:
                     if neighbor in vent.neighbors_vento(self, matriz):
                         base_probability = min(
-                            90, base_probability + 30
+                            90, base_probability + 15
                         )  # Aumenta devido ao vento
-                        base_probability = 100
+
                     else:
-                        base_probability = max(
-                            10, base_probability - 20
-                        )  # Reduz se fora da direção do vento
-                        base_probability = 0
+                        base_probability = random.randint(3, 7)
+                        # Reduz se fora da direção do vento
+
 
                 # Probabilidade ajustada com um fator de suavização
                 probability = max(
@@ -599,87 +599,6 @@ class Barrier:  # representará barreiras como água ou muro, algo assim
     def __repr__(self):
         return "a"
 
-
-# Classe auxiliadora que representa
-class H(Agent):
-    def __init__(self, coord):
-        self.x, self.y = coord
-
-    def __repr__(self):
-        return "H"
-
-
-class House(Agent):
-    def __init__(self, coord):
-
-        self.condition = "safe"
-        self.init = True
-
-    def coords(self, matriz):
-        """
-        Define as coordenadas de um quadrado 3x3 ao redor do ponto central (x, y),
-        ajustando o quadrado caso as coordenadas originais não sejam válidas.
-
-        Retorna as coordenadas válidas ou None se não for possível encontrar um bloco 3x3 válido.
-        """
-        x, y = self.coord[0], self.coord[1]  # Coordenada inicial
-        directions = [
-            (0, 0),  # Centro (posição original)
-            (0, 1),  # Deslocar para a direita
-            (0, -1),  # Deslocar para a esquerda
-            (1, 0),  # Deslocar para baixo
-            (-1, 0),  # Deslocar para cima
-            (1, 1),  # Diagonal inferior direita
-            (1, -1),  # Diagonal inferior esquerda
-            (-1, 1),  # Diagonal superior direita
-            (-1, -1),  # Diagonal superior esquerda
-        ]
-
-        for dx, dy in directions:
-            # Ajustar a posição central com base na direção
-            nx, ny = x + dx, y + dy
-            coords = [(nx + dx, ny + dy) for dx in range(-1, 2) for dy in range(-1, 2)]
-
-            # Verificar se o bloco 3x3 na posição ajustada é válido
-            valid = True
-            for cx, cy in coords:
-                if not (0 <= cx < len(matriz) and 0 <= cy < len(matriz[0])):
-                    valid = False
-                    break
-                if matriz[cx][cy] == "black":
-                    valid = False
-                    break
-
-            # Retorna as coordenadas válidas assim que encontrar
-            if valid:
-                return coords
-
-        # Se nenhuma posição for válida, retorna None
-        return None
-
-    def check_neighbors(self, matriz):
-        coordenadas_casa = self.coords()
-        for coord in coordenadas_casa:
-            coord.neighbors(matriz)
-            for nx, ny in neighbors:
-                if 0 <= nx < len(self.matriz) and 0 <= ny < len(self.matriz[0]):
-                    neighbor = self.matriz[nx][ny]
-                    if (
-                        isinstance(neighbor, (Tree, Bush))
-                        and neighbor.condition == "burning"
-                    ):
-                        self.life -= 0.01
-                        return
-
-    def check_life(self):
-        if self.life <= 0:
-            self.condition = "fim"
-
-    def update_condition(self):
-        self.check_neighbors()
-        self.check_life()
-
-
 class vento:
     def __init__(self, direction=None):
         lista_directions = ["N", "S", "L", "O", "NO", "NE", "SE", "SO"]
@@ -718,22 +637,3 @@ class vento:
         return lista
 
 
-# Estaremos melhorando a implementação o quanto antes
-class agua(Agent):
-    def __init__(self, coord):
-        self.x = coord[0]
-        self.y = coord[1]
-
-
-class River(Agent):
-    def __init__(self, coord, matriz):
-        self.matriz = matriz
-        self.aguas = []
-
-        # Adiciona somente as coordenadas válidas
-        for i in coord:
-            x, y = i
-            if 0 <= x < len(matriz) and 0 <= y < len(
-                matriz[0]
-            ):  # Verifica se a coordenada está dentro dos limites da matriz
-                self.aguas.append(agua(i))

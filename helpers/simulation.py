@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from pygame.locals import *
 
-CSV_KEYS =  ['trees_total', 'trees_alive', 'trees_burning', 'trees_burned', 'bushes', 'chickens', 'water', 'empty']
+CSV_KEYS =  ['trees_total', 'trees_alive', 'trees_burning', 'trees_burned', 'bushes', 'chickens', 'water', 'empty', 'firemen', 'birds']
 
 class Simulation():
 

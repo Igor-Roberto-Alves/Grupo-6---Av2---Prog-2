@@ -499,7 +499,7 @@ class bombeiro(Agent):
         for neigh in self.neighbors(self.matriz):
             if isinstance(neigh, Tree):
                 if neigh.condition == "burning":
-                    self.life -= 0.01
+                    self.life -= 0.2
 
         if 0.5 <= self.life <= 0.8:
             self.status = "burning"

@@ -343,6 +343,8 @@ def main():
 
                     if WITH_SIMULATION:
                         data = forest.get_stats()
+                        data["firemen"] = len(bombeiros_vivos)
+                        data["birds"] = len(birds)
                         data["chickens"] = len(animals)
                         simulation.write_simulation_data(data)
 

@@ -30,6 +30,8 @@ bushes = []
 chickens = []
 water = []
 empty = []
+birds = []
+firemen = []
 
 for i, step_data in enumerate(data):
     trees_total.append(int(step_data["trees_total"]))
@@ -40,6 +42,8 @@ for i, step_data in enumerate(data):
     chickens.append(int(step_data["chickens"]))
     water.append(int(step_data["water"]))
     empty.append(int(step_data["empty"]))
+    birds.append(int(step_data["birds"]))
+    firemen.append(int(step_data["firemen"]))
     steps.append(i)
 
 plt.xlabel("Steps")
@@ -49,9 +53,11 @@ plt.plot(steps, trees_burning, label="Árvores queimando", color="orange")
 plt.plot(steps, trees_burned, label="Árvores queimadas", color="red")
 plt.plot(steps, bushes, label="Arbustos", color="pink")
 plt.plot(steps, chickens, label="Galinhas", color="gray")
-if sum(water) > 0:
-    plt.plot(steps, water, label="Água", color="cyan")
-plt.plot(steps, empty, label="Vazio", color="brown")
+# if sum(water) > 0:
+#     plt.plot(steps, water, label="Água", color="cyan")
+# plt.plot(steps, empty, label="Vazio", color="brown")
+plt.plot(steps, empty, label="Bombeiros", color="purple")
+plt.plot(steps, empty, label="Pássaros", color="yellow")
 plt.legend()
 
 plt.savefig(os.path.join("scripts", "simulation", "data", "images", f"{args.filename}_simulation_data.png"), dpi=300)

@@ -716,24 +716,3 @@ class vento:
                     lista.append(matriz[nx][ny])
 
         return lista
-
-
-# Estaremos melhorando a implementação o quanto antes
-class agua(Agent):
-    def __init__(self, coord):
-        self.x = coord[0]
-        self.y = coord[1]
-
-
-class River(Agent):
-    def __init__(self, coord, matriz):
-        self.matriz = matriz
-        self.aguas = []
-
-        # Adiciona somente as coordenadas válidas
-        for i in coord:
-            x, y = i
-            if 0 <= x < len(matriz) and 0 <= y < len(
-                matriz[0]
-            ):  # Verifica se a coordenada está dentro dos limites da matriz
-                self.aguas.append(agua(i))

@@ -41,7 +41,7 @@ FIREMAN_BURNING1_IMG = pygame.image.load(
 but_size = tela_x // 80
 cell_size = tela_x // 150
 CHUVA_BUT_IMG = pygame.transform.scale(
-    CHUVA_BUT_IMG, (CHUVA_BUT_IMG.get_width() // 2, CHUVA_BUT_IMG.get_height() // 2)
+    CHUVA_BUT_IMG, (CHUVA_BUT_IMG.get_width() // 2.8, CHUVA_BUT_IMG.get_height() // 2.8)
 )
 CARRO_BOMBEIRO_IMG = pygame.transform.scale(
     CARRO_BOMBEIRO_IMG,

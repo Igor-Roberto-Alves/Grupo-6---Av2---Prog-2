@@ -56,8 +56,8 @@ plt.plot(steps, chickens, label="Galinhas", color="gray")
 # if sum(water) > 0:
 #     plt.plot(steps, water, label="Água", color="cyan")
 # plt.plot(steps, empty, label="Vazio", color="brown")
-plt.plot(steps, empty, label="Bombeiros", color="purple")
-plt.plot(steps, empty, label="Pássaros", color="yellow")
+plt.plot(steps, firemen, label="Bombeiros", color="purple")
+plt.plot(steps, birds, label="Pássaros", color="yellow")
 plt.legend()
 
 plt.savefig(os.path.join("scripts", "simulation", "data", "images", f"{args.filename}_simulation_data.png"), dpi=300)

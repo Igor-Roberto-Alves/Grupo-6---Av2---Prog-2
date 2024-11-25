@@ -88,7 +88,8 @@ def draw_forest(screen, forest):
 
 def draw_rio(screen, borda, cell_size, map_width, map_height):
     for x, y in borda:
-        # Verifica se as coordenadas estão dentro dos limites da screen
+
+        # Verifica se as coordenadas estão dentro dos limites da tela
         if 0 <= x < map_height and 0 <= y < map_width:
             screen.blit(im.WATER_IMG, (y * cell_size, x * cell_size))
 
@@ -148,11 +149,12 @@ def draw_birds(screen, birds):
         pygame.draw.rect(screen, PURPLE, (square_x, square_y, square_size, square_size))
 
 
-def draw_rain(rain, screen):
+
+def draw_rain(rain, tela):
     raindrops = rain.rain_drop()
     for i in raindrops:
         pygame.draw.circle(
-            screen,
+            tela,
             (135, 206, 250),  # Cor azul claro para as gotas
             (
                 i[1] * im.cell_size + im.cell_size // 2,
@@ -316,7 +318,8 @@ def main():
                 if im.init_rain_but.is_button_clicked(event.pos):
                     print("chuva iniciada")
                     intensity = slider_rain.getValue()
-                    #raining = agent.Rain(matriz, intensity)
+
+                    raining = agent.Rain(matriz, intensity)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 mouse_x, mouse_y = event.pos
@@ -407,7 +410,8 @@ def main():
             if start_rain_random == 2:
                 intensity = random.randint(5, 15)
                 print(intensity)
-                #raining = agent.Rain(matriz, intensity)
+
+                raining = agent.Rain(matriz, intensity)
             if raining:
                 raining.update_condition()
                 draw_rain(raining, screen)
@@ -476,7 +480,6 @@ def main():
         screen.blit(im.CARRO_BOMBEIRO_IMG, (335, 700))
         screen.blit(im.CARRO_BOMBEIRO_IMG, (345, 725))
         screen.blit(im.CARRO_BOMBEIRO_IMG, (325, 750))
-
         label.setText(f"Passos por segundo: {slider.getValue()}")
         label2.setText(f"Número de galinhas: {slider_chicken.getValue()}")
         label3.setText(f"Número de bombeiros: {slider_fireman.getValue()}")
@@ -488,7 +491,9 @@ def main():
         #     LivePlot(XLst, YLst, (X_POS, Y_POS), (4, 2), screen)
 
         pygame_widgets.update(events)
-        pygame.display.flip()  # Atualiza a screen
+
+        pygame.display.flip()  # Atualiza a tela
+
 
         clock.tick(60)  # Limita o FPS a 60
         i += 1

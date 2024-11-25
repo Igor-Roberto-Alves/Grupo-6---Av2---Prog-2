@@ -367,6 +367,7 @@ class Tree(Agent):
                         base_probability = random.randint(3, 7)
                         # Reduz se fora da direção do vento
 
+
                 # Probabilidade ajustada com um fator de suavização
                 probability = max(
                     0, min(100, base_probability)
@@ -598,7 +599,6 @@ class Barrier:  # representará barreiras como água ou muro, algo assim
     def __repr__(self):
         return "a"
 
-
 class vento:
     def __init__(self, direction=None):
         lista_directions = ["N", "S", "L", "O", "NO", "NE", "SE", "SO"]
@@ -635,4 +635,5 @@ class vento:
                     lista.append(matriz[nx][ny])
 
         return lista
+
 

@@ -65,12 +65,6 @@ def draw_forest(screen, forest):
                     )
             elif isinstance(cell, agent.Barrier):
                 screen.blit(im.WATER_IMG, (j * im.cell_size, i * im.cell_size))
-            elif isinstance(cell, agent.House):
-                pygame.draw.rect(
-                    screen,
-                    (139, 69, 19),  # Cor marrom para a casa
-                    (j * im.cell_size, i * im.cell_size, im.cell_size, im.cell_size),
-                )
 
             if cell == "v":
                 pygame.draw.rect(
@@ -149,7 +143,6 @@ def draw_birds(screen, birds):
         pygame.draw.rect(screen, PURPLE, (square_x, square_y, square_size, square_size))
 
 
-
 def draw_rain(rain, tela):
     raindrops = rain.rain_drop()
     for i in raindrops:
@@ -178,7 +171,7 @@ def init_screen():
                 weights=[1, 1, 1],
                 k=1,
             )[0]
-            for j in range(im.tela_x// im.cell_size)
+            for j in range(im.tela_x // im.cell_size)
         ]
         for i in range(im.tela_y // im.cell_size)
     ]
@@ -458,7 +451,7 @@ def main():
         if im.init_rain_but.visible:
             screen.blit(im.CHUVA_BUT_IMG, (im.init_rain_but.x, im.init_rain_but.y))
 
-         # Carros de bombeiros
+        # Carros de bombeiros
 
         screen.blit(im.CARRO_BOMBEIRO_IMG, (335, 100))
         screen.blit(im.CARRO_BOMBEIRO_IMG, (325, 125))
@@ -493,7 +486,6 @@ def main():
         pygame_widgets.update(events)
 
         pygame.display.flip()  # Atualiza a tela
-
 
         clock.tick(60)  # Limita o FPS a 60
         i += 1
